@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mobile Message</title>
+</head>
+<body>
+<div id="output"></div>
+<script>
+    class Mobile {
+        constructor(name) {
+            this.name = name;
+            this.isOn = false;
+            this.battery = 100;
+            this.draftMess = '';
+            this.inBox = [];
+            this.sent = [];
+        }
+
+        checkMobile() {
+            return this.isOn ? `${this.name} Đang bật. Pin còn lại: ${this.battery}%` : `${this.name} Đang tắt`;
+        }
+
+        turnOn() {
+            if (this.battery > 0 && !this.isOn) {
+                this.battery--;
+                this.isOn = true;
+                return `${this.name}: Đang bật. Pin còn lại: ${this.battery}%`;
+            } else {
+                return `${this.name}: Đã được bật. Pin còn lại: ${this.battery}%`;
+            }
+        }
+
+        turnOff() {
+            if (this.battery > 0 && this.isOn) {
+                this.isOn = false;
+                return `${this.name}: Đang tắt`;
+            } else {
+                return `${this.name}: Đã được tắt`;
+            }
+        }
+
+        chargeBattery() {
+            if (this.battery < 100) {
+                this.battery = 100;
+                return `${this.name}: Đã đầy pin. <br> Pin còn lại: ${this.battery}%`;
+            } else {
+                return `${this.name}: Đang sạc pin. <br> Pin còn lại: ${this.battery}%`;
+            }
+        }
+
+        draft(mess) {
+            if (!this.isOn) {
+                return `${this.name}: Chưa được bật`;
+            }
+            if (this.battery > 0) {
+                this.battery--;
+                this.draftMess = mess;
+                return `${this.name}: Đã soạn tin nhắn: ${mess}. <br> Pin còn lại: ${this.battery}%`;
+            } else {
+                return `${this.name}: Hết pin`;
+            }
+        }
+
+        sentMess(receiver) {
+            if (!this.isOn) {
+                return `${this.name}: Chưa được bật`;
+            }
+            if (this.battery > 0 && this.draftMess !== '') {
+                this.battery--;
+                receiver.inBox.push(this.draftMess);
+                this.sent.push(this.draftMess);
+                const sentMessage = this.draftMess;
+                this.draftMess = '';
+                return `${this.name}: Đã gửi tin nhắn: "${sentMessage}" den ${receiver.name}. <br> Pin còn lại: ${this.battery}%`;
+            } else {
+                return `${this.name}: Không gửi được tin nhắn`;
+            }
+        }
+
+        viewInBox() {
+            if (!this.isOn) {
+                return `${this.name}: Chưa được bật`;
+            }
+            if (this.battery > 0) {
+                this.battery--;
+                return `${this.name}: tin nhắn đến của ${this.name}: ${this.inBox.length > 0 ? this.inBox : 'Không có tin nhắn'}. <br> Pin còn lại: ${this.battery}%`;
+            }
+        }
+
+        viewSent() {
+            if (!this.isOn) {
+                return `${this.name}: Chưa được bật`;
+            }
+            if (this.battery > 0) {
+                this.battery--;
+                return `${this.name}: Tin nhắn đã gửi: ${this.sent.length > 0 ? this.sent : 'Không có tin nhắn'}. <br>Pin còn lại: ${this.battery}%`;
+            }
+        }
+
+        checkBattery (){
+            return `${this.name}: pin còn: ${this.battery}%`;
+        }
+    }
+
+    const nokia = new Mobile('Nokia');
+    const iphone = new Mobile('Iphone');
+
+    let output = document.getElementById("output");
+
+    function outPut(message) {
+        output.innerHTML += message + '<br>';
+    }
+
+    outPut(nokia.turnOn());
+    outPut(iphone.turnOn());
+    outPut(nokia.draft("My heart got lost in the circle you drew, and there's no way out"));
+    outPut(nokia.sentMess(iphone));
+    outPut(nokia.viewSent());
+    // outPut(nokia.checkMobile());
+    // outPut(iphone.checkMobile());
+    // outPut(nokia.chargeBattery());
+    // outPut(iphone.chargeBattery());
+    outPut(iphone.viewInBox());
+    outPut(nokia.checkBattery());
+    outPut(iphone.checkBattery());
+    // outPut(nokia.turnOff());
+    // outPut(iphone.turnOff());
+</script>
+</body>
+</html>

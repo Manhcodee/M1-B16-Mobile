@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mobile</title>
+</head>
+<body>
+<script>
+  class Mobile {
+      constructor(name) {
+          this.name = name;
+          this.battery = 100;
+          this.isOn = false;
+          this.deftmessage = '';
+          this.inboxMessages = [];
+          this.sentMessage = [];
+      }
+
+      checkIsOn() {
+          return this.isOn;
+      }
+
+      turnOn () {
+          if (!this.isOn) {
+              this.isOn = true;
+              console.log(`${this.name}: da bat`)
+          } else {
+              this.battery--;
+              console.log(`${this.name}: da duoc bat`)
+          }
+      }
+
+      turnOff () {
+          if (this.isOn) {
+              this.isOn = false;
+              console.log(`${this.name}: da tat`)
+          } else {
+              console.log(`${this.name}: da duoc tat`)
+          }
+      }
+
+      chargeBattery () {
+          if (this.battery < 100) {
+              this.battery = 100;
+              console.log(`${this.name}: da sac day pin`);
+          } else {
+              console.log(`${this.name}: dang sac pin`);
+          }
+      }
+
+      composeMessage (message) {
+          if (!this.isOn) {
+              console.log(`${this.name}: chua duoc bat`);
+          }
+          if (this.battery > 0) {
+              this.deftmessage = message;
+              console.log(`${this.name}: da soan tin nhan ${message}`);
+              this.battery--;
+          } else {
+              console.log(`${this.name}: khong du pin`);
+          }
+      }
+
+      sentMessage (receive) {
+          if (!this.isOn) {
+              console.log(`${this.name}: chua duoc bat`);
+          }
+          if (this.battery > 0 && this.deftmessage !== '') {
+              const messageS = {
+                  from: this.name,
+                  message: this.deftmessage,
+                  timestamp: new Date().toLocaleString()
+              };
+              this.battery--;
+              receive.sentMessage(messageS);
+              this.sentMessage.push(messageS);
+              this.deftmessage = "";
+              console.log(`${this.name} da gui tin nhan`)
+          } else {
+              console.log(`${this.name}: khong the gui tin nhan (pin = : ${this.battery}`)
+          }
+      }
+
+      receiveMessage (messageS) {
+          if (!this.isOn) {
+              console.log(`${this.name}: chua duoc bat`);
+          }
+          if (this.battery > 0) {
+              this.inboxMessages.push(messageS);
+              this.battery--;
+              console.log(`${this.name}: Đã nhận tin nhắn từ ${messageS.from}`);
+          } else {
+              console.log(`${this.name}: Không đủ pin để nhận tin nhắn`);
+          }
+      }
+
+      viewInbox() {
+          if (!this.isOn) {
+              console.log(`${this.name}: Điện thoại chưa bật`);
+              return;
+          }
+          if (this.battery > 0) {
+              console.log(`\n=== ${this.name} - Hộp thư đến ===`);
+              if (this.inboxMessages.length === 0) {
+                  console.log("Không có tin nhắn");
+              } else {
+                  this.inboxMessages.forEach(msg => {
+                      console.log(`Từ: ${msg.from}`);
+                      console.log(`Thời gian: ${msg.timestamp}`);
+                      console.log(`Nội dung: ${msg.message}\n`);
+                  });
+              }
+              this.battery--;
+          } else {
+              console.log(`${this.name}: Không đủ pin`);
+          }
+      }
+
+      viewSent() {
+          if (!this.isOn) {
+              console.log(`${this.name}: Điện thoại chưa bật`);
+              return;
+          }
+          if (this.battery > 0) {
+              console.log(`\n=== ${this.name} - Tin đã gửi ===`);
+              if (this.sentMessage.length === 0) {
+                  console.log("Không có tin nhắn");
+              } else {
+                  this.sentMessage.forEach(msg => {
+                      console.log(`Thời gian: ${msg.timestamp}`);
+                      console.log(`Nội dung: ${msg.message}\n`);
+                  });
+              }
+              this.battery--;
+          } else {
+              console.log(`${this.name}: Không đủ pin`);
+          }
+      }
+      getBatteryStatus() {
+          return `${this.name}: Pin còn ${this.battery}%`;
+      }
+  }
+  // Thực hiện kịch bản
+  const nokia = new Mobile("Nokia");
+  const iphone = new Mobile("iPhone");
+
+  // Bật cả hai điện thoại
+  nokia.turnOn();
+  iphone.turnOn();
+
+  // Kiểm tra pin ban đầu
+  console.log(nokia.getBatteryStatus());
+  console.log(iphone.getBatteryStatus());
+
+  // Nokia soạn và gửi tin nhắn cho iPhone
+  nokia.composeMessage("Xin chào iPhone! ta là Nokia đây, đấm nhau không");
+  nokia.viewSent(iphone);
+
+  // iPhone kiểm tra và hiển thị tin nhắn
+  iphone.viewInbox();
+
+  // Kiểm tra pin sau khi thực hiện các thao tác
+  console.log(nokia.getBatteryStatus());
+  console.log(iphone.getBatteryStatus());
+
+</script>
+</body>
+</html>
